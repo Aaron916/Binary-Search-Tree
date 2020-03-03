@@ -1,9 +1,9 @@
 /***********************************************************************
 * Program:
 *    Assignment 09, Binary Search Trees
-*    Brother <your instructor name>, CS 235
+*    Brother JonesL, CS 235
 * Author:
-*    <your name here>
+*    Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford
 * Summary: 
 *    This is a driver program to exercise the BST class.  When you
 *    submit your program, this should not be changed in any way.  That being
@@ -29,10 +29,10 @@ void testBalance();
 // I suggest first commenting out all of these tests, then try to use only
 // TEST1.  Then, when TEST1 works, try TEST2 and so on.
 #define TEST1   // for testSimple()
-#define TEST2   // for testAdd()
-#define TEST3   // for testIterate()
-#define TEST4   // for testDelete()
-#define TESTA   // for testBalance()
+//#define TEST2   // for testAdd()
+//#define TEST3   // for testIterate()
+//#define TEST4   // for testDelete()
+//#define TESTA   // for testBalance()
 
 /**********************************************************************
  * MAIN

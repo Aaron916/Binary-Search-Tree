@@ -1,11 +1,11 @@
 ###############################################################
 # Program:
 #     Assignment 09, Binary Search Tree
-#     Brother XXXXX, CS235
+#     Brother JonesL, CS235
 # Author:
-#     <your name here>
+#     Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford
 # Summary:
-#     <put a description here>
+#     Our Binary Search Tree implemenation.
 # Time:
 #     <how long did it take to complete this program?>
 ###############################################################
