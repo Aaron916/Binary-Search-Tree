@@ -11,8 +11,37 @@
 #ifndef BST_H
 #define BST_H
 
+#include "bnode.h"
+
 namespace custom
 {
+
+template <class T>
+class BST {
+private:
+   BNode<T>* bNode;
+   int numElements;
+
+   BST() {
+      bNode = NULL;
+      numElements = 0;
+   }
+}
+
+template <class T>
+BST <T> :: bool empty() {
+   if (bNode == NULL) {
+      return true;
+   }
+   assert(bNode != NULL) else {
+      return false;
+   }
+}
+
+template <class T>
+BST <T> :: operator = (BST<T>) {
+
+}
 
 
    
