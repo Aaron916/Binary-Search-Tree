@@ -32,6 +32,9 @@ public:
 
 	int size() const { return numElements; }
 	bool empty() const { return size() == NULL; }
+	iterator rBegin() {return new iterator(root);}
+	iterator rEnd() {return new iterator();}
+	iterator end() {return new iterator();}
 	void clear();
 	void insert(const T& t);
 
@@ -45,6 +48,85 @@ private:
 	int numElements;
 };
 
+/**************************************************
+* BST insert
+*************************************************/
+template <class T>
+class BST <T> :: void insert(T data) {
+	if (root == NULL) { root = new BNode(data)}
+
+	assert(root != NULL);
+
+	BNode<T>* nodeChild;
+	BNode<T>* nodeParent = root;
+	do {
+		if(data >= nodeChild.data) {
+			nodeParent = nodeChild;
+			nodeChild = nodeParent->pRight;
+		}
+		if (data <= node.data) {
+			nodeParent = nodeChild;
+			nodeChild = nodeParent->pLeft;
+		}
+	} while (nodeChild != NULL);
+
+	assert(nodeParent != NULL);
+
+	try {
+
+		BNode insertNode = new BNode(data);
+		insertNode.pParent = nodeParent;
+
+		if ( data >= nodeParent.data) {
+		nodeParent->pRight = insertNode;
+		}
+		else {
+			nodeParent->pLeft = insertNode;
+		}
+	} throw "ERROR: Unable to allocate a node."
+
+	return;
+}
+
+/**************************************************
+* BST find
+*************************************************/
+template <class T>
+class BST <T> :: iterator find(T value) {
+	BNode<T>* nodeParent = root;
+	BNode<T>* nodeChild = root;
+	do {
+		if (value > nodeChild.data) {
+			nodeParent = nodeChild;
+			nodeChild = nodeParent->pRight;
+		}
+		if (value < nodeChild.data) {
+			nodeParent = nodeChild;
+			nodeChild = nodeParent->left;
+		}
+		if (value == nodeChild.data) {return new iterator(nodeChild)}
+	} while (nodeChild != NULL);
+	
+	assert(nodeChild == NULL);
+	return end();
+}
+
+/**************************************************
+* BST begin
+*************************************************/
+template <class T>
+class BST <T> :: iterator begin() {
+	if (root == NULL){return new iterator()}
+
+	assert(root !=NULL);
+	BNode<T>* pNode = root;
+	BNode<T>* hold;
+	do {
+		hold = pNode->pLeft;
+		if (hold == NULL) { return pNode; }
+		else {pNode = hold;}
+	} while (hold != Null);
+}
 
 /**************************************************
 * BST iterator
