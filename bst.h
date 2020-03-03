@@ -11,6 +11,8 @@
 #ifndef BST_H
 #define BST_H
 
+#include "bnode.h"
+
 namespace custom
 {
 template<class T>
