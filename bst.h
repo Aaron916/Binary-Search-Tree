@@ -33,22 +33,19 @@ public:
 
 	int size() const { return numElements; }
 	bool empty() const { return size() == NULL; }
-	iterator rBegin() {return new iterator(root);}
-	iterator rEnd() {return new iterator();}
-	iterator end() {return new iterator();}
 	void clear();
 	void insert(const T& t);
 
 	class iterator;
 	iterator begin();
-	iterator end();
+	iterator end() { return new iterator(); }
+	iterator find(const T& value);
 
 	class reverse_iterator;
-	reverse_iterator rbegin();
-	reverse_iterator rend();
+	reverse_iterator rbegin() { return new iterator(root); }
+	reverse_iterator rend() { return new iterator(); }
 
 	void erase(iterator it);
-	iterator find(const T& t);
 
 private:
 	class BNode;
@@ -60,19 +57,19 @@ private:
 * BST insert
 *************************************************/
 template <class T>
-class BST <T> :: void insert(T data) {
-	if (root == NULL) { root = new BNode(data)}
+void BST <T> :: insert(const T& data) {
+	if (root == NULL) { root = new BNode(data); }
 
 	assert(root != NULL);
 
-	BNode<T>* nodeChild;
-	BNode<T>* nodeParent = root;
+	BNode* nodeChild;
+	BNode* nodeParent = root;
 	do {
 		if(data >= nodeChild.data) {
 			nodeParent = nodeChild;
 			nodeChild = nodeParent->pRight;
 		}
-		if (data <= node.data) {
+		if (data <= root.data) {
 			nodeParent = nodeChild;
 			nodeChild = nodeParent->pLeft;
 		}
@@ -85,14 +82,17 @@ class BST <T> :: void insert(T data) {
 		BNode insertNode = new BNode(data);
 		insertNode.pParent = nodeParent;
 
-		if ( data >= nodeParent.data) {
-		nodeParent->pRight = insertNode;
+		if (data >= nodeParent.data) {
+			nodeParent->pRight = insertNode;
 		}
 		else {
 			nodeParent->pLeft = insertNode;
 		}
-	} throw "ERROR: Unable to allocate a node."
-
+	}
+	catch (...)
+	{
+		throw "ERROR: Unable to allocate a node.";
+	}
 	return;
 }
 
@@ -100,9 +100,9 @@ class BST <T> :: void insert(T data) {
 * BST find
 *************************************************/
 template <class T>
-class BST <T> :: iterator find(T value) {
-	BNode<T>* nodeParent = root;
-	BNode<T>* nodeChild = root;
+typename BST<T> :: iterator BST<T>:: find(const T& value) {
+	BNode* nodeParent = root;
+	BNode* nodeChild = root;
 	do {
 		if (value > nodeChild.data) {
 			nodeParent = nodeChild;
@@ -112,7 +112,7 @@ class BST <T> :: iterator find(T value) {
 			nodeParent = nodeChild;
 			nodeChild = nodeParent->left;
 		}
-		if (value == nodeChild.data) {return new iterator(nodeChild)}
+		if (value == nodeChild.data) { return new iterator(nodeChild); }
 	} while (nodeChild != NULL);
 	
 	assert(nodeChild == NULL);
@@ -123,17 +123,17 @@ class BST <T> :: iterator find(T value) {
 * BST begin
 *************************************************/
 template <class T>
-class BST <T> :: iterator begin() {
-	if (root == NULL){return new iterator()}
+typename BST <T> :: iterator BST<T>:: begin() {
+	if (root == NULL) { return new iterator(); }
 
 	assert(root !=NULL);
-	BNode<T>* pNode = root;
-	BNode<T>* hold;
+	BNode* pNode = root;
+	BNode* hold;
 	do {
 		hold = pNode->pLeft;
 		if (hold == NULL) { return pNode; }
 		else {pNode = hold;}
-	} while (hold != Null);
+	} while (hold != NULL);
 }
 /*****************************************************
 * BNode Class
@@ -414,8 +414,11 @@ void BST<T>:: clear()
 
 }
 
+template<class T>
+void BST<T>:: erase(BST<T>::iterator it)
+{
 
-
+}
 
 } // namespace custom
 
