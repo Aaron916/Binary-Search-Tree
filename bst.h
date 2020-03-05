@@ -51,43 +51,54 @@ private:
 	class BNode;
 	BNode* root;
 	int numElements;
+
+  // Helper function to use recursively
+	void privateInsert(T t, BNode*& root);
 };
 
 /**************************************************
-* BST insert
+* BST insert / Public & Private
 *************************************************/
+template<class T>
+void BST<T>::insert(const T& t)
+{
+	privateInsert(t, this->root);
+	numElements++;
+}
+
 template <class T>
-void BST <T> :: insert(const T& data) {
-	if (root == NULL) { root = new BNode(data); }
-
-	assert(root != NULL);
-
-	BNode* nodeChild;
-	BNode* nodeParent = root;
-	do {
-		if(data >= nodeChild.data) {
-			nodeParent = nodeChild;
-			nodeChild = nodeParent->pRight;
-		}
-		if (data <= root.data) {
-			nodeParent = nodeChild;
-			nodeChild = nodeParent->pLeft;
-		}
-	} while (nodeChild != NULL);
-
-	assert(nodeParent != NULL);
+void BST <T> :: privateInsert(T t, BNode*& root)
+{
 
 	try {
-
-		BNode insertNode = new BNode(data);
-		insertNode.pParent = nodeParent;
-
-		if (data >= nodeParent.data) {
-			nodeParent->pRight = insertNode;
-		}
-		else {
-			nodeParent->pLeft = insertNode;
-		}
+		if (root == nullptr)
+ 		{
+ 			root = new BNode(t);
+ 		}
+ 		// Try to move data to left child if it is less than
+ 		else if (t < root->data)
+ 		{
+ 			if (root->pLeft != nullptr)
+ 			{
+ 				privateInsert(t, root->pLeft);
+ 			}
+ 			else
+ 			{
+ 				root->pLeft = new BNode(t, root);
+ 			}
+ 		}
+ 		// Try to move data to right child if it is more than or equal to
+ 		else if (t > root->data || t == root->data)
+ 		{
+ 			if (root->pRight != nullptr)
+ 			{
+ 				privateInsert(t, root->pRight);
+ 			}
+ 			else
+ 			{
+ 				root->pRight = new BNode(t, root);
+ 			}
+ 		}
 	}
 	catch (...)
 	{
@@ -114,7 +125,7 @@ typename BST<T> :: iterator BST<T>:: find(const T& value) {
 		}
 		if (value == nodeChild.data) { return new iterator(nodeChild); }
 	} while (nodeChild != NULL);
-	
+
 	assert(nodeChild == NULL);
 	return end();
 }
@@ -145,11 +156,22 @@ public:
 	BNode* pLeft;
 	BNode* pRight;
 	BNode* pParent;
+	bool isRed;
 
-	BNode() : pLeft(NULL), pRight(NULL), pParent(NULL), data() {}
+	BNode() : pLeft(NULL), pRight(NULL), pParent(NULL), data(), isRed(true) {}
 
 	// non-default. Initialize data as we create the node
-	BNode(const T& data) : pLeft(NULL), pRight(NULL), pParent(NULL), data(data) {}
+	BNode(const T& data) : pLeft(NULL), pRight(NULL), pParent(NULL), data(data), isRed(true) {}
+	BNode(const T& data, BNode* parent) : pLeft(NULL), pRight(NULL), pParent(parent), data(data), isRed(true) {}
+
+	~BNode()
+	{
+		data.~T();
+		pLeft = NULL;
+		pRight = NULL;
+		pParent = NULL;
+		isRed = NULL;
+	}
 
 };
 
@@ -325,10 +347,10 @@ private:
 	BNode* pNode;
 };
 
-   
+
 /**************************************************
  * BST ITERATOR :: DECREMENT PREFIX
- *     advance by one. 
+ *     advance by one.
  * Author:      Br. Helfrich
  * Performance: O(log n) though O(1) in the common case
  *************************************************/
@@ -382,7 +404,7 @@ private:
 template<class T>
 BST<T> ::BST(const BST<T>& rhs): root(NULL), numElements(0)
 {
-	try 
+	try
 	{
 		if (!rhs.empty())
 		{
