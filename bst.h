@@ -34,8 +34,10 @@ private:
 	BNode* root;
 	int numElements;
 
-	// Helper function to use recursively
+	// Helper functions to use recursively
 	void privateInsert(T t, BNode*& root);
+	BNode* copyBTree(const BNode* root);
+	BNode* privateFind(T value, BNode* root);
 
 public:
 	BST()
@@ -180,6 +182,21 @@ class BST <T> ::iterator
 private:
 	typename BST <T>::BNode* pNode;
 
+  // Check if it is a right node or left
+	bool isRight(BNode* right)
+	{
+		if (right->pParent != nullptr)
+			return( right == right->pParent->pRight );
+		return false;
+	}
+
+	bool isLeft(BNode* left)
+	{
+		if (left->pParent != nullptr)
+			return(left == left->pParent->pLeft);
+		return false;
+	}
+
 public:
 	// constructors, destructors, and assignment operator
 	iterator() : pNode(NULL) {}
@@ -188,6 +205,12 @@ public:
 	iterator& operator = (const iterator& rhs)
 	{
 		this->pNode = rhs.pNode;
+		return *this;
+	}
+
+	iterator & operator = (const BNode* node)
+	{
+		this->pNode = node;
 		return *this;
 	}
 
@@ -207,8 +230,40 @@ public:
 	// prefix increment
 	iterator& operator ++ ()
 	{
-		if (pNode)
-			pNode = pNode->pNext;
+		// do nothing if we have nothing
+		if (pNode == nullptr)
+			return *this;
+
+		// go to the right node and from there to the farthest left (closest value that is greater)
+		else if (pNode->pRight != nullptr)
+		{
+			pNode = pNode->pRight;
+
+			while (pNode->pLeft != nullptr)
+				pNode = pNode->pLeft;
+		}
+
+		// check what type of child it is
+		else if (isLeft(pNode))
+		{
+			//The next greatest node for a left child is always it's parent
+			pNode = pNode->pParent;
+		}
+		else if (isRight(pNode))
+		{
+			// The next greatest node for a right child is always the parent
+			// of the first ancestor that is a left child
+			while (isRight(pNode))
+			{
+				pNode = pNode->pParent;
+			}
+			pNode = pNode->pParent;
+		}
+		else
+		{
+			pNode = nullptr;
+		}
+
 		return *this;
 	}
 
@@ -216,8 +271,38 @@ public:
 	iterator operator ++ (int postfix)
 	{
 		iterator tmp(*this);
-		if (pNode)
-			pNode = pNode->pNext;
+
+		// do nothing if we have nothing
+		if (pNode == nullptr)
+			return *this;
+
+		else if (pNode->pRight != nullptr)
+		{
+			pNode = pNode->pRight;
+
+			while (pNode->pLeft != nullptr)
+				pNode = pNode->pLeft;
+		}
+
+
+		else if (isLeft(pNode))
+		{
+			pNode = pNode->pParent;
+		}
+
+		else if (isRight(pNode))
+		{
+			while (isRight(pNode))
+			{
+				pNode = pNode->pParent;
+			}
+			pNode = pNode->pParent;
+		}
+		else
+		{
+			pNode = nullptr;
+		}
+
 		return tmp;
 	}
 
@@ -276,34 +361,43 @@ public:
 };
 
 /**************************************************
-* BST find
+* BST find / Public & Private
 *************************************************/
 template <class T>
 typename BST<T> ::iterator BST<T>::find(const T& value) {
-	BNode* nodeParent = root;
-	BNode* nodeChild = root;
-	do {
-		if (value > nodeChild.data) {
-			nodeParent = nodeChild;
-			nodeChild = nodeParent->pRight;
-		}
-		if (value < nodeChild.data) {
-			nodeParent = nodeChild;
-			nodeChild = nodeParent->left;
-		}
-		if (value == nodeChild.data) { return new iterator(nodeChild); }
-	} while (nodeChild != NULL);
-
-	assert(nodeChild == NULL);
-	return end();
+	BNode* temp = privateFind(value, this->root);
+	iterator tempIt(temp);
+	return tempIt;
 }
+
+template<class T>
+typename BST<T>::BNode* BST<T>::privateFind(T value, BNode* root)
+{
+	if (root == nullptr || value == root->data)
+	{
+		return root;
+	}
+
+	else if (value < root->data)
+	{
+		return privateFind(value, root->pLeft);
+	}
+
+	else if (value > root->data)
+	{
+		return privateFind(value, root->pRight);
+	}
+
+	return root;
+}
+
 
 /**************************************************
 * BST begin
 *************************************************/
 template <class T>
 typename BST <T> ::iterator BST<T>::begin() {
-	if (root == NULL) { return new iterator(); }
+	if (root == NULL) { return iterator(NULL); }
 
 	assert(root != NULL);
 	BNode* pNode = root;
@@ -337,18 +431,8 @@ typename BST <T> ::iterator BST<T>::rbegin() {
 template<class T>
 BST<T> ::BST(const BST<T>& rhs): root(NULL), numElements(0)
 {
-	try
-	{
-		if (!rhs.empty())
-		{
-			*this = rhs;
-		}
-
-	}
-	catch (...)
-	{
-		throw "ERROR: Unable to allocate a node";
-	}
+		this->numElements = rhs.numElements;
+ 		this->root = copyBTree(rhs.root);
 }
 
 /*****************************************************
@@ -357,8 +441,13 @@ BST<T> ::BST(const BST<T>& rhs): root(NULL), numElements(0)
 template<class T>
 BST<T>& BST<T> :: operator = (const BST<T>& rhs)
 {
+	this->numElements = rhs.numElements;
+	this->root = copyBTree(rhs.root);
+
 	return *this;
 }
+
+
 
 template<class T>
 void BST<T>::deleteBTree(BNode*& node)
@@ -377,6 +466,38 @@ void BST<T>::deleteBTree(BNode*& node)
 template<class T>
 void BST<T>:: erase(BST<T>::iterator it)
 {
+
+}
+
+/*****************************************************
+* BST copy Tree
+******************************************************/
+
+template<class T>
+typename BST<T>::BNode* BST<T>::copyBTree(const BNode * root)
+{
+	if (root != nullptr)
+	{
+		BST<T>::BNode* newBNode = new BST<T>::BNode(root->data);
+		if (root->pLeft != nullptr)
+		{
+			newBNode->pLeft = copyBTree(root->pLeft);
+
+			if (newBNode->pLeft != nullptr)
+				newBNode->pLeft->pParent = newBNode;
+		}
+
+		if (root->pRight != nullptr)
+		{
+			newBNode->pRight = copyBTree(root->pRight);
+
+			if (newBNode->pRight != nullptr)
+				newBNode->pRight->pParent = newBNode;
+		}
+
+		return newBNode;
+	}
+	return nullptr;
 
 }
 
