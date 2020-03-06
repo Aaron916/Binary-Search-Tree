@@ -145,7 +145,7 @@ void testAdd()
 
       // copy the tree to another
       BST <int> tree2(tree1);
-      cout << "\tSize of tree2: " << tree1.size() << endl;
+      cout << "\tSize of tree2: " << tree2.size() << endl;
    }
    catch (const char * error)
    {
