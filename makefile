@@ -3,7 +3,7 @@
 #     Assignment 09, Binary Search Tree
 #     Brother JonesL, CS235
 # Author:
-#     Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford
+#     Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford, Allan Marina
 # Summary:
 #     Our Binary Search Tree implemenation.
 # Time:

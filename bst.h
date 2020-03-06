@@ -3,7 +3,7 @@
  *    Assignment 09, Binary Search Tree (BST)
  *    Brother JonesL, CS 235
  * Author:
-*    Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford
+*    Adam Goff, Aaron Rook, Martin Melerio, Tanner Stratford, Allan Marina
  * Summary:
  *    Create a binary search tree
  ************************************************************************/
@@ -18,6 +18,19 @@ class BST
 {
 private:
 	class BNode;
+	void deleteBinaryTree(BNode*& node)
+	{
+		if (node == NULL)
+		{
+			return;
+		}
+
+		deleteBinaryTree(node->pLeft);
+		deleteBinaryTree(node->pRight);
+		delete node;
+		node = NULL;
+	}
+
 	BNode* root;
 	int numElements;
 
@@ -58,8 +71,10 @@ public:
 	iterator begin();
 	iterator end() { return iterator(NULL); }
 	iterator find(const T& value);
+	//rBegin and rEnd are for right child,
+	//not for reverse_iterator
 	iterator rbegin();
-	iterator rend() { return iterator(NULL); }
+	iterator rend() { return new iterator(); }
 
 	/*class reverse_iterator;
 	reverse_iterator rbegin() { return new iterator(root); }
@@ -146,7 +161,18 @@ public:
 		isRed = NULL;
 	}
 
+	/*void BST<T>::deleteBinaryTree(BNode*& node)
+	{
+		if (node == NULL)
+		{
+			return;
+		}
 
+		deleteBinaryTree(node->pLeft);
+		deleteBinaryTree(node->pRight);
+		delete node;
+		node = NULL;
+	}*/
 
 	// add a node the left/right
 	void addLeft(BNode* pNode);
@@ -170,6 +196,9 @@ public:
 template <class T>
 class BST <T> ::iterator
 {
+private:
+	typename BST <T>::BNode* pNode;
+
 public:
 	// constructors, destructors, and assignment operator
 	iterator() : pNode(NULL) {}
@@ -332,7 +361,7 @@ private:
 //	}
 //
 //private:
-//	typename BST<T>::BNode* pNode;
+//	typename BST <T>::BNode* pNode;
 //};
 
 
@@ -432,6 +461,23 @@ template <class T>
 typename BST<T>::iterator BST<T>::rbegin()
 {
 
+}
+
+/**************************************************
+* BST begin
+*************************************************/
+template <class T>
+typename BST <T> ::iterator BST<T>::rbegin() {
+	if (root == NULL) { return new iterator(); }
+
+	assert(root != NULL);
+	BNode* pNode = root;
+	BNode* hold;
+	do {
+		hold = pNode->pRight;
+		if (hold == NULL) { return pNode; }
+		else { pNode = hold; }
+	} while (hold != NULL);
 }
 
 /*****************************************************
