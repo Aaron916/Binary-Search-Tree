@@ -41,11 +41,12 @@ public:
 
 	int size() const { return numElements; }
 	bool empty() const { return size() == NULL; }
+	void deleteBTree(BNode*& node);
 
 	void clear()
 	{
 		if (root)
-			deleteBinaryTree(root);
+			deleteBTree(root);
 		numElements = 0;
 	}
 
@@ -55,12 +56,14 @@ public:
 
 	class iterator;
 	iterator begin();
-	iterator end() { return new iterator(); }
+	iterator end() { return iterator(NULL); }
 	iterator find(const T& value);
+	iterator rbegin();
+	iterator rend() { return iterator(NULL); }
 
-	class reverse_iterator;
+	/*class reverse_iterator;
 	reverse_iterator rbegin() { return new iterator(root); }
-	reverse_iterator rend() { return new iterator(); }
+	reverse_iterator rend() { return new iterator(); }*/
 
 	void erase(iterator it);
 };
@@ -143,18 +146,7 @@ public:
 		isRed = NULL;
 	}
 
-	void deleteBTree(BNode*& node)
-	{
-		if (node == NULL)
-		{
-			return;
-		}
 
-		deleteBTree(node->pLeft);
-		deleteBTree(node->pRight);
-		delete node;
-		node = NULL;
-	}
 
 	// add a node the left/right
 	void addLeft(BNode* pNode);
@@ -178,9 +170,6 @@ public:
 template <class T>
 class BST <T> ::iterator
 {
-private:
-	BNode* pNode;
-
 public:
 	// constructors, destructors, and assignment operator
 	iterator() : pNode(NULL) {}
@@ -274,75 +263,77 @@ public:
 			pNode = pNode->pPrev;
 		return tmp;
 	}
+private:
+	typename BST<T>::BNode* pNode;
 };
 
 /**************************************************
 * BST : reverse iterator
 *************************************************/
-template <class T>
-class BST<T> :: reverse_iterator
-{
-public:
-	// constructors, destructors, and assignment operator
-	reverse_iterator() : pNode(NULL) {}
-	reverse_iterator(BST* it) : pNode(it) {}
-	reverse_iterator(const reverse_iterator& rhs) { *this = rhs; }
-	reverse_iterator& operator = (const reverse_iterator& rhs)
-	{
-		this->pNode = rhs.pNode;
-		return *this;
-	}
-
-	// equals, not equals operator
-	bool operator != (const iterator& rhs) const { return rhs.pNode != this->pNode; }
-	bool operator == (const iterator& rhs) const { return rhs.pNode == this->pNode; }
-
-	// dereference operator
-	T& operator * ()
-	{
-		if (pNode)
-			return pNode->data;
-		else
-			throw "ERROR: Trying to dereference a NULL pointer";
-	}
-
-	// prefix increment
-	reverse_iterator& operator ++ ()
-	{
-		if (pNode)
-			pNode = pNode->pPrev;
-		return *this;
-	}
-
-	// postfix increment
-	reverse_iterator operator ++ (int postfix)
-	{
-		iterator tmp(*this);
-		if (pNode)
-			pNode = pNode->pPrev;
-		return tmp;
-	}
-
-	//prefix decrement
-	reverse_iterator& operator -- ()
-	{
-		if (pNode)
-			pNode = pNode->pNext;
-		return *this;
-	}
-
-	//postfix decrement
-	reverse_iterator operator -- (int postfix)
-	{
-		iterator tmp(*this);
-		if (pNode)
-			pNode = pNode->pNExt;
-		return tmp;
-	}
-
-private:
-	BNode* pNode;
-};
+//template <class T>
+//class BST<T> :: reverse_iterator
+//{
+//public:
+//	// constructors, destructors, and assignment operator
+//	reverse_iterator() : pNode(NULL) {}
+//	reverse_iterator(BST* it) : pNode(it) {}
+//	reverse_iterator(const reverse_iterator& rhs) { *this = rhs; }
+//	reverse_iterator& operator = (const reverse_iterator& rhs)
+//	{
+//		this->pNode = rhs.pNode;
+//		return *this;
+//	}
+//
+//	// equals, not equals operator
+//	bool operator != (const iterator& rhs) const { return rhs.pNode != this->pNode; }
+//	bool operator == (const iterator& rhs) const { return rhs.pNode == this->pNode; }
+//
+//	// dereference operator
+//	T& operator * ()
+//	{
+//		if (pNode)
+//			return pNode->data;
+//		else
+//			throw "ERROR: Trying to dereference a NULL pointer";
+//	}
+//
+//	// prefix increment
+//	reverse_iterator& operator ++ ()
+//	{
+//		if (pNode)
+//			pNode = pNode->pPrev;
+//		return *this;
+//	}
+//
+//	// postfix increment
+//	reverse_iterator operator ++ (int postfix)
+//	{
+//		iterator tmp(*this);
+//		if (pNode)
+//			pNode = pNode->pPrev;
+//		return tmp;
+//	}
+//
+//	//prefix decrement
+//	reverse_iterator& operator -- ()
+//	{
+//		if (pNode)
+//			pNode = pNode->pNext;
+//		return *this;
+//	}
+//
+//	//postfix decrement
+//	reverse_iterator operator -- (int postfix)
+//	{
+//		iterator tmp(*this);
+//		if (pNode)
+//			pNode = pNode->pNExt;
+//		return tmp;
+//	}
+//
+//private:
+//	typename BST<T>::BNode* pNode;
+//};
 
 
 /**************************************************
@@ -434,6 +425,14 @@ typename BST <T> ::iterator BST<T>::begin() {
 		else { pNode = hold; }
 	} while (hold != NULL);
 }
+/**************************************************
+* BST rbegin
+*************************************************/
+template <class T>
+typename BST<T>::iterator BST<T>::rbegin()
+{
+
+}
 
 /*****************************************************
 * BST Copy Constructor
@@ -462,6 +461,20 @@ template<class T>
 BST<T>& BST<T> :: operator = (const BST<T>& rhs)
 {
 	return *this;
+}
+
+template<class T>
+void BST<T>::deleteBTree(BNode*& node)
+{
+	if (node == NULL)
+	{
+		return;
+	}
+
+	deleteBTree(node->pLeft);
+	deleteBTree(node->pRight);
+	delete node;
+	node = NULL;
 }
 
 template<class T>
