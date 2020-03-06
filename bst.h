@@ -70,7 +70,9 @@ public:
 	iterator begin();
 	iterator end() { return new iterator(); }
 	iterator find(const T& value);
-	iterator rbegin() { return new iterator(root); }
+	//rBegin and rEnd are for right child,
+	//not for reverse_iterator
+	iterator rbegin();
 	iterator rend() { return new iterator(); }
 
 	/*class reverse_iterator;
@@ -445,6 +447,23 @@ typename BST <T> ::iterator BST<T>::begin() {
 	BNode* hold;
 	do {
 		hold = pNode->pLeft;
+		if (hold == NULL) { return pNode; }
+		else { pNode = hold; }
+	} while (hold != NULL);
+}
+
+/**************************************************
+* BST begin
+*************************************************/
+template <class T>
+typename BST <T> ::iterator BST<T>::rbegin() {
+	if (root == NULL) { return new iterator(); }
+
+	assert(root != NULL);
+	BNode* pNode = root;
+	BNode* hold;
+	do {
+		hold = pNode->pRight;
 		if (hold == NULL) { return pNode; }
 		else { pNode = hold; }
 	} while (hold != NULL);
