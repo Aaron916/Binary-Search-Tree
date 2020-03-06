@@ -71,14 +71,8 @@ public:
 	iterator begin();
 	iterator end() { return iterator(NULL); }
 	iterator find(const T& value);
-	//rBegin and rEnd are for right child,
-	//not for reverse_iterator
 	iterator rbegin();
-	iterator rend() { return new iterator(); }
-
-	/*class reverse_iterator;
-	reverse_iterator rbegin() { return new iterator(root); }
-	reverse_iterator rend() { return new iterator(); }*/
+	iterator rend() { return iterator(NULL); }
 
 	void erase(iterator it);
 };
@@ -161,19 +155,6 @@ public:
 		isRed = NULL;
 	}
 
-	/*void BST<T>::deleteBinaryTree(BNode*& node)
-	{
-		if (node == NULL)
-		{
-			return;
-		}
-
-		deleteBinaryTree(node->pLeft);
-		deleteBinaryTree(node->pRight);
-		delete node;
-		node = NULL;
-	}*/
-
 	// add a node the left/right
 	void addLeft(BNode* pNode);
 	void addRight(BNode* pNode);
@@ -202,7 +183,7 @@ private:
 public:
 	// constructors, destructors, and assignment operator
 	iterator() : pNode(NULL) {}
-	iterator(BST* it) : pNode(it) {}
+	iterator(BNode* it) : pNode(it) {}
 	iterator(const iterator& rhs) { *this = rhs; }
 	iterator& operator = (const iterator& rhs)
 	{
@@ -292,128 +273,7 @@ public:
 			pNode = pNode->pPrev;
 		return tmp;
 	}
-private:
-	typename BST<T>::BNode* pNode;
 };
-
-/**************************************************
-* BST : reverse iterator
-*************************************************/
-//template <class T>
-//class BST<T> :: reverse_iterator
-//{
-//public:
-//	// constructors, destructors, and assignment operator
-//	reverse_iterator() : pNode(NULL) {}
-//	reverse_iterator(BST* it) : pNode(it) {}
-//	reverse_iterator(const reverse_iterator& rhs) { *this = rhs; }
-//	reverse_iterator& operator = (const reverse_iterator& rhs)
-//	{
-//		this->pNode = rhs.pNode;
-//		return *this;
-//	}
-//
-//	// equals, not equals operator
-//	bool operator != (const iterator& rhs) const { return rhs.pNode != this->pNode; }
-//	bool operator == (const iterator& rhs) const { return rhs.pNode == this->pNode; }
-//
-//	// dereference operator
-//	T& operator * ()
-//	{
-//		if (pNode)
-//			return pNode->data;
-//		else
-//			throw "ERROR: Trying to dereference a NULL pointer";
-//	}
-//
-//	// prefix increment
-//	reverse_iterator& operator ++ ()
-//	{
-//		if (pNode)
-//			pNode = pNode->pPrev;
-//		return *this;
-//	}
-//
-//	// postfix increment
-//	reverse_iterator operator ++ (int postfix)
-//	{
-//		iterator tmp(*this);
-//		if (pNode)
-//			pNode = pNode->pPrev;
-//		return tmp;
-//	}
-//
-//	//prefix decrement
-//	reverse_iterator& operator -- ()
-//	{
-//		if (pNode)
-//			pNode = pNode->pNext;
-//		return *this;
-//	}
-//
-//	//postfix decrement
-//	reverse_iterator operator -- (int postfix)
-//	{
-//		iterator tmp(*this);
-//		if (pNode)
-//			pNode = pNode->pNExt;
-//		return tmp;
-//	}
-//
-//private:
-//	typename BST <T>::BNode* pNode;
-//};
-
-
-/**************************************************
- * BST ITERATOR :: DECREMENT PREFIX
- *     advance by one.
- * Author:      Br. Helfrich
- * Performance: O(log n) though O(1) in the common case
- *************************************************/
-//template <class T>
-//typename BST <T> :: iterator & BST <T> :: iterator :: operator -- ()
-//{
-//   // do nothing if we have nothing
-//   if (NULL == pNode)
-//      return *this;
-//
-//   // if there is a left node, take it
-//   if (NULL != pNode->pLeft)
-//   {
-//      // go left
-//      pNode = pNode->pLeft;
-//
-//      // jig right - there might be more right-most children
-//      while (pNode->pRight)
-//         pNode = pNode->pRight;
-//      return *this;
-//   }
-//
-//   // there are no left children, the right are done
-//   assert(NULL == pNode->pLeft);
-//   BNode * pSave = pNode;
-//
-//   // go up
-//   pNode = pNode->pParent;
-//
-//   // if the parent is the NULL, we are done!
-//   if (NULL == pNode)
-//      return *this;
-//
-//   // if we are the right-child, got to the parent.
-//   if (pSave == pNode->pRight)
-//      return *this;
-//
-//   // we are the left-child, go up as long as we are the left child!
-//   while (NULL != pNode && pSave == pNode->pLeft)
-//   {
-//      pSave = pNode;
-//      pNode = pNode->pParent;
-//   }
-//
-//   return *this;
-//}
 
 /**************************************************
 * BST find
@@ -458,17 +318,8 @@ typename BST <T> ::iterator BST<T>::begin() {
 * BST rbegin
 *************************************************/
 template <class T>
-typename BST<T>::iterator BST<T>::rbegin()
-{
-
-}
-
-/**************************************************
-* BST begin
-*************************************************/
-template <class T>
 typename BST <T> ::iterator BST<T>::rbegin() {
-	if (root == NULL) { return new iterator(); }
+	if (root == NULL) { return iterator(NULL); }
 
 	assert(root != NULL);
 	BNode* pNode = root;
