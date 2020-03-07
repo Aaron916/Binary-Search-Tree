@@ -7,7 +7,7 @@
 # Summary:
 #     Our Binary Search Tree implemenation.
 # Time:
-#     <how long did it take to complete this program?>
+#     12+ hours combined for the core part of the assignment
 ###############################################################
 
 ##############################################################
@@ -23,4 +23,3 @@ a.out: assignment09.o
 ##############################################################
 assignment09.o: bst.h assignment09.cpp
 	g++ -c assignment09.cpp -g
-

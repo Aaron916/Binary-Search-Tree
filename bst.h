@@ -34,10 +34,33 @@ private:
 	BNode* root;
 	int numElements;
 
+	// is the passed node our right child?
+	bool isRightChild(BNode* root)
+	{
+		if (root == nullptr)
+			return false;
+		else if (root->pParent != nullptr)
+		{
+			return root->pParent->pRight == root;
+		}
+		return false;
+	}
+	bool isLeftChild(BNode* root)
+	{
+		if (root == nullptr)
+			return false;
+		else if (root->pParent != nullptr)
+		{
+			return root->pParent->pLeft == root;
+		}
+		return false;
+	}
+
 	// Helper functions to use recursively
 	void privateInsert(T t, BNode*& root);
 	BNode* copyBTree(const BNode* root);
 	BNode* privateFind(T value, BNode* root);
+	void privateErase(BNode*& pNode);
 
 public:
 	BST()
@@ -76,7 +99,7 @@ public:
 	iterator rbegin();
 	iterator rend() { return iterator(NULL); }
 
-	void erase(iterator & it);
+	void erase(BST<T>::iterator & it);
 };
 
 /**************************************************
@@ -165,10 +188,6 @@ public:
 	void addLeft(const T& t);
 	void addRight(const T& t);
 
-	// is the passed node our right child?
-	bool isRightChild(BNode* pNode) const { return pRight == pNode; }
-	bool isLeftChild(BNode* pNode) const { return pLeft == pNode; }
-
 	// balance the tree
 	void balance();
 };
@@ -180,7 +199,6 @@ template <class T>
 class BST <T> ::iterator
 {
 private:
-	typename BST <T>::BNode* pNode;
 
   // Check if it is a right node or left
 	bool isRight(BNode* right)
@@ -198,6 +216,7 @@ private:
 	}
 
 public:
+	typename BST <T>::BNode* pNode;
 	// constructors, destructors, and assignment operator
 	iterator() : pNode(NULL) {}
 	iterator(BNode* it) : pNode(it) {}
@@ -466,58 +485,100 @@ void BST<T>::deleteBTree(BNode*& node)
 }
 
 /*****************************************************
-* BST Erase
+* BST Erase / Public & Private
 ******************************************************/
 template<class T>
-void BST<T>:: erase(BST<T>::iterator & it)
+void BST<T>::erase(BST<T>::iterator & it)
 {
-	BST<T>::BNode* pNode = it;
+	BNode* node = it.pNode;
+	privateErase(node);
+}
+
+
+template<class T>
+void BST<T>::privateErase(BNode*& pNode)
+{
+	if (pNode == nullptr) return;
 
 	//Case 1: No Children
-	if (pNode->pRight == NULL && pNode->pLeft == NULL)
+	if (pNode->pRight == nullptr && pNode->pLeft == nullptr)
 	{
-		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode)
+		if (pNode->pParent != nullptr)
 		{
-			pNode->pParent->pRight = NULL;
-		}
-		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
-		{
-			pNode->pParent->pLeft = NULL;
+			if(pNode->pParent->pLeft == pNode)
+			{
+				pNode->pParent->pLeft = nullptr;
+				pNode->pParent = nullptr;
+			}
+			else
+			{
+				pNode->pParent->pRight = nullptr;
+				pNode->pParent = nullptr;
+			}
 		}
 
-		delete pNode;
+		pNode->~BNode();
 	}
+
 
 	//Case 2: One Child
-	if (pNode->pRight == NULL && pNode->pLeft != NULL)
+	else if (pNode->pLeft == nullptr && pNode->pRight != nullptr
+				|| pNode->pLeft != nullptr && pNode->pRight == nullptr)
 	{
-		pNode->pLeft->pParent = pNode->pParent;
-
-		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode )
+		if (pNode->pParent != nullptr)
 		{
-			pNode->pParent->pRight = pNode->pLeft;
-		}
-		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
-		{
-			pNode->pParent->pLeft = pNode->pLeft;
+			if (pNode->pLeft != nullptr)
+			{
+				// is pNode a left child
+				if (isLeftChild(pNode))
+				{
+					pNode->pParent->pLeft = pNode->pLeft;
+				}
+				else
+				{
+					pNode->pParent->pRight = pNode->pLeft;
+				}
+				pNode->pLeft->pParent = pNode->pParent;
+			}
+			else
+			{
+				if (isLeftChild(pNode))
+				{
+					pNode->pParent->pLeft = pNode->pRight;
+				}
+				else
+				{
+					pNode->pParent->pRight = pNode->pRight;
+				}
+				pNode->pRight->pParent = pNode->pParent;
+			}
 		}
 
-		delete pNode;
+		pNode->~BNode();
 	}
 
-	if (pNode->pLeft == NULL && pNode != NULL)
+  // Case 3: two children
+	else if (pNode->pLeft != nullptr && pNode->pRight != nullptr)
 	{
-		pNode->pRight->pParent = pNode->pParent;
+		BNode* temp = pNode->pRight;
 
-		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode)
+		if (temp->pLeft != nullptr)
 		{
-			pNode->pParent->pRight = pNode->pRight;
+			while (temp->pLeft != nullptr) temp = temp->pLeft;
 		}
-		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
-		{
-			pNode->pParent->pLeft = pNode->pRight;
-		}
-		delete pNode;
+
+		// Move nodes up
+		if (temp->pRight != nullptr)
+			temp->pRight->pParent = temp->pParent;
+
+		// Connect to lower node
+		if (isLeftChild(temp))
+			temp->pParent->pLeft = temp->pRight;
+		else
+			temp->pParent->pRight = temp->pRight;
+
+		pNode->data = temp->data;
+		temp->~BNode();
 	}
 
 }
