@@ -76,7 +76,7 @@ public:
 	iterator rbegin();
 	iterator rend() { return iterator(NULL); }
 
-	void erase(iterator it);
+	void erase(iterator & it);
 };
 
 /**************************************************
@@ -448,7 +448,9 @@ BST<T>& BST<T> :: operator = (const BST<T>& rhs)
 }
 
 
-
+/*****************************************************
+* BST Delete Binary Tree
+******************************************************/
 template<class T>
 void BST<T>::deleteBTree(BNode*& node)
 {
@@ -463,9 +465,60 @@ void BST<T>::deleteBTree(BNode*& node)
 	node = NULL;
 }
 
+/*****************************************************
+* BST Erase
+******************************************************/
 template<class T>
-void BST<T>:: erase(BST<T>::iterator it)
+void BST<T>:: erase(BST<T>::iterator & it)
 {
+	BST<T>::BNode* pNode = it;
+
+	//Case 1: No Children
+	if (pNode->pRight == NULL && pNode->pLeft == NULL)
+	{
+		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode)
+		{
+			pNode->pParent->pRight = NULL;
+		}
+		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
+		{
+			pNode->pParent->pLeft = NULL;
+		}
+
+		delete pNode;
+	}
+
+	//Case 2: One Child
+	if (pNode->pRight == NULL && pNode->pLeft != NULL)
+	{
+		pNode->pLeft->pParent = pNode->pParent;
+
+		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode )
+		{
+			pNode->pParent->pRight = pNode->pLeft;
+		}
+		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
+		{
+			pNode->pParent->pLeft = pNode->pLeft;
+		}
+
+		delete pNode;
+	}
+
+	if (pNode->pLeft == NULL && pNode != NULL)
+	{
+		pNode->pRight->pParent = pNode->pParent;
+
+		if (pNode->pParent != NULL && pNode->pParent->pRight == pNode)
+		{
+			pNode->pParent->pRight = pNode->pRight;
+		}
+		if (pNode->pParent != NULL && pNode->pParent->pLeft == pNode)
+		{
+			pNode->pParent->pLeft = pNode->pRight;
+		}
+		delete pNode;
+	}
 
 }
 
